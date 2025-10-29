@@ -7,6 +7,7 @@ type ResendSendResponse = { id?: string };
 type ResendErrorPayload = { message?: string; error?: string };
 
 const MODE = process.env.MODE || "testnet"; // testnet or mainnet
+const DISABLE_PAYMENT = process.env.DISABLE_PAYMENT === "true"; // Set to "true" to disable payment requirement
 
 // ENV (Bun auto-loads .env)
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -201,7 +202,7 @@ app.get("/", (c) => {
 });
 
 // Serve MCP under /mcp/* to match client default
-app.use("/mcp/*", (c) => paid(c.req.raw));
+app.use("/mcp/*", (c) => DISABLE_PAYMENT ? base(c.req.raw) : paid(c.req.raw));
 export default app;
 
 

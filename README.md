@@ -33,14 +33,22 @@ bun install
 Create a `.env` file (Bun auto-loads it) based on `.env.example`:
 
 ```bash
-# Email sending
+MODE=testnet
+
+# Information
+TITLE=Micro
+DESCRIPTION="I am cool, pay me to spam me."
+IMAGE_URL=https://pbs.twimg.com/profile_images/1961191512546390016/1SYYSX-x_400x400.jpg
+URLS=https://x.com/microchipgnu
+
+# Email
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM=no-reply@example.com
 RECIPIENT_EMAIL=alice@example.com,bob@example.com
 
 # Payments
-FACILITATOR_URL=https://facilitator.x402.rs
-TOOL_PRICE_SEND_EMAIL=$0.005
+FACILITATOR_URL=https://facilitator.payai.network
+TOOL_PRICE_SEND_EMAIL="$0.005"
 
 # Payout addresses
 EVM_ADDRESS=0xYourEvmAddress
