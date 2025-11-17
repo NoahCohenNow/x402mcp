@@ -329,6 +329,27 @@ app.get("/", (c) => {
                     </a>
                 </header>
 
+                <!-- CONTRACT ADDRESS -->
+                <section class="retro-window w-full hidden-anim">
+                    <div class="retro-window-titlebar">
+                        <span>[== CONTRACT_ADDRESS ==]</span>
+                        <div class="retro-window-controls"><span></span><span></span><span></span></div>
+                    </div>
+                    <div class="p-6 sm:p-8">
+                        <p class="text-base mb-4">
+                            Contract Address:
+                        </p>
+                        
+                        <div class="bg-black border-2 border-retro-pink p-4 relative group">
+                            <pre class="text-retro-pink text-glow-pink text-lg break-all" id="contract-address">ARPMAWHCSNH2SBpFGSJEwSEhNkk4VhyornFfcxh9pump</pre>
+                            <button id="contractCopyButton" class="absolute top-2 right-2 bg-retro-dark border border-retro-pink text-retro-pink px-3 py-1 font-terminal text-sm transition-all duration-150 group-hover:bg-retro-pink group-hover:text-retro-dark">
+                                <span id="contractCopyButtonText">COPY</span>
+                            </button>
+                        </div>
+                        <div id="contractCopyMessage" class="h-4 text-retro-green mt-2 font-terminal"></div>
+                    </div>
+                </section>
+
                 <!-- HOW IT WORKS -->
                 <section class="retro-window w-full hidden-anim">
                     <div class="retro-window-titlebar">
@@ -478,6 +499,47 @@ app.get("/", (c) => {
                     }
 
                     document.getElementById('copyButton').addEventListener('click', copyToClipboard);
+
+                    // === Contract Address Copy ===
+                    function copyContractAddress() {
+                        const contractButton = document.getElementById('contractCopyButton');
+                        const contractButtonText = document.getElementById('contractCopyButtonText');
+                        const contractMessage = document.getElementById('contractCopyMessage');
+                        const contractText = 'ARPMAWHCSNH2SBpFGSJEwSEhNkk4VhyornFfcxh9pump';
+
+                        const textArea = document.createElement('textarea');
+                        textArea.value = contractText;
+                        textArea.style.position = 'fixed';
+                        textArea.style.opacity = '0';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+
+                        try {
+                            const successful = document.execCommand('copy');
+                            if (successful) {
+                                contractButtonText.textContent = 'COPIED!';
+                                contractMessage.textContent = '>> ARPMAWHCSNH2SBpFGSJEwSEhNkk4VhyornFfcxh9pump - COPIED';
+                                contractButton.classList.add('bg-retro-green', 'text-retro-dark', 'border-retro-green');
+                                contractButton.classList.remove('border-retro-pink', 'text-retro-pink');
+
+                                setTimeout(() => {
+                                    contractButtonText.textContent = 'COPY';
+                                    contractMessage.textContent = '';
+                                    contractButton.classList.remove('bg-retro-green', 'text-retro-dark', 'border-retro-green');
+                                    contractButton.classList.add('border-retro-pink', 'text-retro-pink');
+                                }, 2500);
+                            } else {
+                                contractMessage.textContent = '>> ERROR: COULD NOT COPY';
+                            }
+                        } catch (err) {
+                            contractMessage.textContent = '>> ERROR: FAILED TO COPY';
+                        }
+
+                        document.body.removeChild(textArea);
+                    }
+
+                    document.getElementById('contractCopyButton').addEventListener('click', copyContractAddress);
                 })();
             </script>
 
