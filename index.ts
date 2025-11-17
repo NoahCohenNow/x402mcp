@@ -142,60 +142,345 @@ const paid = withPayment(base, {
 
 app.get("/", (c) => {
     return c.html(`
+        <!DOCTYPE html>
         <html lang="en">
         <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <title>${escapeHtml(INFO_TITLE || "MCP Email Monetization Server")}</title>
-            <meta name="color-scheme" content="dark" />
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${escapeHtml(INFO_TITLE || "x402mcp - Turn Spam Into Revenue")}</title>
             <script src="https://cdn.tailwindcss.com"></script>
+            
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-            <style>html { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; }</style>
-        </head>
-        <body class="relative min-h-screen m-0 grid place-items-center bg-gradient-to-br from-[#2c5364] via-[#203a43] to-[#0f2027] text-white">
-        ${renderHeaderSection()}
-            <main class="mx-4">
-                <section class="rounded-2xl bg-white/10 backdrop-blur-md shadow-2xl ring-1 ring-white/10 p-10 max-w-md text-center">
-                    ${renderProfileSection(INFO_TITLE, IMAGE_URL, INFO_DESCRIPTION, INFO_URLS)}
-                    ${renderAboutSection(INFO_TITLE, TOOL_PRICE_SEND_EMAIL)}
-                </section>
-            </main>
-            <footer class="pointer-events-none absolute inset-x-0 bottom-0 p-4">
-                <div class="pointer-events-auto mx-auto flex max-w-3xl items-center justify-center gap-6">
-                    <a href="https://github.com/microchipgnu/x402-email-mcp" target="_blank" rel="noopener" class="flex items-center gap-2 text-emerald-300/90 hover:text-white transition-colors underline decoration-emerald-400/30 hover:decoration-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 inline-block align-text-bottom"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.091-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.847-2.337 4.695-4.566 4.944.359.309.678.919.678 1.852 0 1.336-.012 2.417-.012 2.747 0 .268.18.58.688.482C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg>
-                        GitHub
-                    </a>
-                    <a class="inline-block" href="${VERCEL_DEPLOY_URL}" target="_blank" rel="noopener">
-                        <img class="h-8" src="https://vercel.com/button" alt="Deploy with Vercel"/>
-                    </a>
-                </div>
-            </footer>
-            <script>(function(){
-                const base = window.location.origin + window.location.pathname;
-                const endpoint = (base.endsWith('/') ? base.slice(0, -1) : base) + '/mcp';
-                const urlEl = document.getElementById('url');
-                if (urlEl) urlEl.textContent = endpoint;
+            <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+            
+            <style>
+                @tailwind base;
+                @tailwind components;
+                @tailwind utilities;
 
-                const copyBtn = document.getElementById('url-copy');
-                if (copyBtn && endpoint) {
-                    copyBtn.addEventListener('click', async () => {
-                        try {
-                            await navigator.clipboard.writeText(endpoint);
-                            const prevTitle = copyBtn.getAttribute('title') || '';
-                            copyBtn.setAttribute('title', 'Copied');
-                            const originalText = copyBtn.textContent || 'copy';
-                            copyBtn.textContent = 'copied';
-                            setTimeout(() => {
-                                copyBtn.setAttribute('title', prevTitle || 'Copy endpoint');
-                                copyBtn.textContent = originalText;
-                            }, 1200);
-                        } catch (e) {}
-                    });
+                body {
+                    font-family: 'VT323', monospace;
+                    background-color: #1a0b2e;
+                    color: #d0f0d0;
+                    overflow-x: hidden;
                 }
-            })();</script>
+                
+                body::after {
+                    content: "";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: repeating-linear-gradient(
+                        transparent,
+                        transparent 1px,
+                        rgba(0, 0, 0, 0.4) 1px,
+                        rgba(0, 0, 0, 0.4) 3px
+                    );
+                    pointer-events: none;
+                    z-index: 9999;
+                    opacity: 0.3;
+                }
+
+                .text-glow-green {
+                    text-shadow: 0 0 3px #39ff14, 0 0 5px #39ff14, 0 0 10px #39ff14;
+                }
+                .text-glow-pink {
+                    text-shadow: 0 0 3px #ff007f, 0 0 5px #ff007f;
+                }
+                .text-glow-blue {
+                    text-shadow: 0 0 3px #00bfff, 0 0 5px #00bfff;
+                }
+
+                .retro-window {
+                    border: 2px solid #39ff14;
+                    background: rgba(12, 5, 20, 0.5);
+                    box-shadow: 4px 4px 0px #39ff14;
+                    transition: all 0.2s ease;
+                }
+
+                .retro-window-titlebar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: #39ff14;
+                    color: #1a0b2e;
+                    padding: 0.25rem 0.5rem;
+                    font-family: 'Press Start 2P', sans-serif;
+                    font-size: 0.75rem;
+                    line-height: 1rem;
+                }
+                
+                .retro-window-controls span {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border: 2px solid #1a0b2e;
+                    margin-left: 4px;
+                    background: #1a0b2e;
+                    opacity: 0.5;
+                }
+
+                .retro-btn {
+                    font-family: 'Press Start 2P', sans-serif;
+                    font-size: 0.875rem;
+                    border: 2px solid #ff007f;
+                    background: transparent;
+                    color: #ff007f;
+                    padding: 0.75rem 1.25rem;
+                    text-shadow: 0 0 5px #ff007f;
+                    box-shadow: 3px 3px 0px #ff007f;
+                    transition: all 0.1s ease-in-out;
+                    cursor: pointer;
+                }
+
+                .retro-btn:hover {
+                    background: #ff007f;
+                    color: #1a0b2e;
+                    text-shadow: none;
+                    transform: translate(3px, 3px);
+                    box-shadow: 0px 0px 0px #ff007f;
+                }
+
+                .typing {
+                    width: 7ch;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    border-right: 4px solid #39ff14;
+                    animation: typing 2s steps(7, end),
+                                 blink-caret .75s step-end infinite;
+                }
+                
+                @keyframes typing {
+                    from { width: 0 }
+                    to { width: 7ch }
+                }
+
+                @keyframes blink-caret {
+                    from, to { border-color: transparent }
+                    50% { border-color: #39ff14; }
+                }
+
+                .hidden-anim {
+                    opacity: 0;
+                    transform: translateY(40px);
+                    filter: blur(5px);
+                    transition: opacity 0.6s ease-out, transform 0.6s ease-out, filter 0.6s ease-out;
+                }
+
+                .show-anim {
+                    opacity: 1;
+                    transform: translateY(0);
+                    filter: blur(0);
+                }
+            </style>
+
+            <script>
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            fontFamily: {
+                                display: ['"Press Start 2P"', 'sans-serif'],
+                                terminal: ['VT323', 'monospace'],
+                            },
+                            colors: {
+                                'retro-dark': '#1a0b2e',
+                                'retro-green': '#39ff14',
+                                'retro-pink': '#ff007f',
+                                'retro-blue': '#00bfff',
+                                'retro-text': '#d0f0d0',
+                            },
+                            animation: {
+                                'text-pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                                'flicker': 'flicker 1s linear infinite',
+                            },
+                            keyframes: {
+                                flicker: {
+                                    '0%, 100%': { opacity: 1 },
+                                    '50%': { opacity: 0.8 },
+                                }
+                            }
+                        }
+                    }
+                }
+            </script>
+        </head>
+
+        <body class="min-h-screen p-4 sm:p-8">
+
+            <div class="container mx-auto max-w-3xl flex flex-col items-center gap-12 sm:gap-16">
+
+                <!-- HEADER -->
+                <header class="flex flex-col items-center text-center mt-12 sm:mt-20">
+                    <h1 class="typing font-display text-5xl sm:text-7xl text-retro-green text-glow-green mb-4">x402mcp</h1>
+                    
+                    <h2 class="font-terminal text-2xl sm:text-3xl text-retro-pink text-glow-pink animate-flicker mb-4">
+                        Turn spam into revenue.
+                    </h2>
+                    
+                    <p class="text-lg sm:text-xl max-w-lg mb-4">
+                        Pay in <span class="text-retro-blue font-bold">USDC</span> to reach me via AI agents. Built with x402 protocol.
+                    </p>
+                    
+                    <a href="https://x.com/x402mcp" target="_blank" rel="noopener" class="font-display text-retro-blue text-glow-blue text-lg hover:underline">
+                        [x.com/x402mcp]
+                    </a>
+                </header>
+
+                <!-- HOW IT WORKS -->
+                <section class="retro-window w-full hidden-anim">
+                    <div class="retro-window-titlebar">
+                        <span>[== HOW_IT_WORKS.EXE ==]</span>
+                        <div class="retro-window-controls"><span></span><span></span><span></span></div>
+                    </div>
+                    <div class="p-6 sm:p-8 text-lg">
+                        <p class="mb-4">
+                            AI agents pay <span class="text-retro-green font-bold text-glow-green text-xl">${TOOL_PRICE_SEND_EMAIL} in USDC</span> to send emails to ${escapeHtml(INFO_TITLE || "x402mcp")}.
+                        </p>
+                        <p class="mb-6">
+                            Every message requires on-chain payment. No spam. Only paid attention.
+                        </p>
+                        <pre class="bg-black/50 border border-retro-green/50 p-4 rounded text-retro-green text-sm sm:text-base overflow-x-auto">
+  [AI Agent]               [Your Inbox]
+     |                         ^
+     |---(${TOOL_PRICE_SEND_EMAIL} USDC)--------> |
+     |                         |
+  [x402mcp]--------------------|
+  (Payment Verification)
+    
+  [Spammer]                  [Your Inbox]
+     |                         |
+     |---(No Pay)------------> X (Blocked)
+     |                         
+  [x402mcp]--------------------|
+  (Payment Verification)
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- TRY IT NOW -->
+                <section class="retro-window w-full hidden-anim">
+                    <div class="retro-window-titlebar">
+                        <span>[== MCP_ENDPOINT_LIVE ==]</span>
+                        <div class="retro-window-controls"><span></span><span></span><span></span></div>
+                    </div>
+                    <div class="p-6 sm:p-8">
+                        <h3 class="font-display text-2xl text-retro-green text-glow-green mb-4">🧪 TEST IT LIVE (PAY ${TOOL_PRICE_SEND_EMAIL})</h3>
+                        <p class="text-lg mb-6">
+                            Connect your AI agent to this endpoint. Your payment lands on-chain in seconds.
+                        </p>
+                        
+                        <p class="text-base mb-4 text-retro-blue font-bold">
+                            💰 Payments go to:
+                        </p>
+                        <div class="bg-black border border-retro-blue/50 p-3 mb-4 text-sm text-retro-blue break-all">
+                            <span class="text-retro-green">Solana:</span> ${escapeHtml(SVM_ADDRESS)}
+                        </div>
+                        
+                        <p class="text-base mb-4">
+                            Copy this endpoint and use it in your AI client:
+                        </p>
+                        
+                        <div class="bg-black border-2 border-retro-blue p-4 relative group">
+                            <pre class="text-retro-blue text-glow-blue text-lg break-all" id="endpoint-url"></pre>
+                            <button id="copyButton" class="absolute top-2 right-2 bg-retro-dark border border-retro-blue text-retro-blue px-3 py-1 font-terminal text-sm transition-all duration-150 group-hover:bg-retro-blue group-hover:text-retro-dark">
+                                <span id="copyButtonText">COPY</span>
+                            </button>
+                        </div>
+                        <div id="copyMessage" class="h-4 text-retro-green mt-2 font-terminal"></div>
+                    </div>
+                </section>
+                
+                <!-- MONETIZE CTA -->
+                <section class="text-center w-full hidden-anim flex flex-col items-center">
+                    <h3 class="font-display text-3xl sm:text-4xl text-retro-green text-glow-green mb-4 animate-text-pulse">
+                        💰 MONETIZE YOUR INBOX
+                    </h3>
+                    <p class="text-lg sm:text-xl max-w-md mb-8">
+                        Deploy your own x402mcp server and start earning USDC for every AI message you receive.
+                    </p>
+                    
+                    <a href="${VERCEL_DEPLOY_URL}" target="_blank" rel="noopener" class="retro-btn">
+                        🚀 Deploy Your Own
+                    </a>
+                </section>
+
+                <!-- FOOTER -->
+                <footer class="w-full border-t-2 border-dashed border-retro-green/50 pt-8 pb-12 text-center hidden-anim">
+                    <a href="https://github.com/NoahCohenNow/x402mcp" target="_blank" rel="noopener" class="font-display text-lg text-retro-pink text-glow-pink hover:underline">
+                        [ GitHub ]
+                    </a>
+                </footer>
+
+            </div>
+
+            <script>
+                // === Endpoint URL Setup ===
+                (function(){
+                    const base = window.location.origin + window.location.pathname;
+                    const endpoint = (base.endsWith('/') ? base.slice(0, -1) : base) + '/mcp';
+                    const urlEl = document.getElementById('endpoint-url');
+                    if (urlEl) urlEl.textContent = endpoint;
+
+                    // === Scroll-In Animation ===
+                    const observer = new IntersectionObserver(
+                        (entries) => {
+                            entries.forEach((entry) => {
+                                if (entry.isIntersecting) {
+                                    entry.target.classList.add('show-anim');
+                                }
+                            });
+                        },
+                        { threshold: 0.1 }
+                    );
+
+                    const hiddenElements = document.querySelectorAll('.hidden-anim');
+                    hiddenElements.forEach((el) => observer.observe(el));
+
+                    // === Copy to Clipboard ===
+                    function copyToClipboard() {
+                        const copyButton = document.getElementById('copyButton');
+                        const copyButtonText = document.getElementById('copyButtonText');
+                        const copyMessage = document.getElementById('copyMessage');
+
+                        const textArea = document.createElement('textarea');
+                        textArea.value = endpoint;
+                        textArea.style.position = 'fixed';
+                        textArea.style.opacity = '0';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+
+                        try {
+                            const successful = document.execCommand('copy');
+                            if (successful) {
+                                copyButtonText.textContent = 'COPIED!';
+                                copyMessage.textContent = '>> ENDPOINT COPIED TO CLIPBOARD';
+                                copyButton.classList.add('bg-retro-green', 'text-retro-dark', 'border-retro-green');
+                                copyButton.classList.remove('border-retro-blue', 'text-retro-blue');
+
+                                setTimeout(() => {
+                                    copyButtonText.textContent = 'COPY';
+                                    copyMessage.textContent = '';
+                                    copyButton.classList.remove('bg-retro-green', 'text-retro-dark', 'border-retro-green');
+                                    copyButton.classList.add('border-retro-blue', 'text-retro-blue');
+                                }, 2500);
+                            } else {
+                                copyMessage.textContent = '>> ERROR: COULD NOT COPY';
+                            }
+                        } catch (err) {
+                            copyMessage.textContent = '>> ERROR: FAILED TO COPY';
+                        }
+
+                        document.body.removeChild(textArea);
+                    }
+
+                    document.getElementById('copyButton').addEventListener('click', copyToClipboard);
+                })();
+            </script>
+
         </body>
         </html>
     `);
@@ -207,7 +492,7 @@ export default app;
 
 
 function buildVercelDeployUrl({
-    repositoryUrl = "https://github.com/microchipgnu/x402-email-mcp",
+    repositoryUrl = "https://github.com/NoahCohenNow/x402mcp",
     projectName = "x402-email-mcp",
     repositoryName = "x402-email-mcp",
     env = [
@@ -264,69 +549,3 @@ function formatUrlLabel(url: string): string {
     }
 }
 
-function renderLinkButtons(INFO_URLS: string[]): string {
-    if (!INFO_URLS.length) return "";
-    return `<div class="mt-6 space-y-3">${INFO_URLS
-        .map((u) => {
-            const href = sanitizeUrl(u);
-            const label = escapeHtml(formatUrlLabel(u));
-            return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="block w-full rounded-xl bg-white/10 ring-1 ring-white/10 hover:bg-white/20 transition-colors px-4 py-3 text-white">${label}</a>`;
-        })
-        .join("")}</div>`;
-}
-
-function renderProfileSection(INFO_TITLE: string, IMAGE_URL: string, INFO_DESCRIPTION: string, INFO_URLS: string[] ): string {
-    const heading = escapeHtml(INFO_TITLE || "Paid Email Sending");
-    const imageUrl = IMAGE_URL || "https://pbs.twimg.com/profile_images/1961191512546390016/1SYYSX-x_400x400.jpg";
-    const imageAlt = "Email Me";
-    const imageHtml = `<img src="${imageUrl}" alt="${imageAlt}" class="w-12 h-12 mb-3 rounded-full shadow-lg border-2 border-white/20" loading="lazy" />`;
-
-    const titleHtml = `<h1 class="text-3xl font-extrabold mb-2 text-white drop-shadow">${heading}</h1>`;
-
-    const descHtml = INFO_DESCRIPTION
-        ? `<p class="text-slate-300 text-base mb-2">${escapeHtml(INFO_DESCRIPTION)}</p>`
-        : "";
-
-    const linksHtml = renderLinkButtons(INFO_URLS);
-
-    return `
-        <section class="flex flex-col items-center text-center mb-6">
-            ${imageHtml}
-            ${titleHtml}
-            ${descHtml}
-            ${linksHtml}
-        </section>
-    `.trim();
-}
-
-function renderAboutSection(INFO_TITLE: string, TOOL_PRICE_SEND_EMAIL: string): string {
-    const title = "About";
-    const description = `This MCP server will send emails to ${escapeHtml(INFO_TITLE || "the configured recipients")}, with a payment required per email. The price is <strong>$${TOOL_PRICE_SEND_EMAIL}</strong>.`;
-    return `
-        <div class="mt-8 border-t border-white/10 pt-6 text-center">
-            <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-white/60">${escapeHtml(title)}</h2>
-            <div class="flex justify-center">
-                <p class="text-[0.8rem] leading-relaxed text-white/70 max-w-xs mx-auto">${description}</p>
-            </div>
-            <div class="mb-5 flex justify-center items-center gap-2 mt-6">
-                <span class="rounded-md bg-white/10 px-4 py-1 text-xs font-mono text-white border border-white/20" id="url" title="Client endpoint"></span>
-                <button id="url-copy" type="button" title="Copy endpoint" class="inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300" aria-label="Copy endpoint">copy</button>
-            </div>
-        </div>
-    `.trim();
-}
-
-function renderHeaderSection(): string {
-    return `
-        <header class="absolute left-1/2 top-0 transform -translate-x-1/2 mt-8 pt-6 text-center w-full max-w-lg">
-            <div class="flex flex-col items-center gap-2">
-                <h1 class="text-4xl font-extrabold text-white drop-shadow-lg tracking-tight">
-                    <span class="text-emerald-300 underline">SPA</span><span class="text-emerald-400"><span class="underline">M</span>CP</span>
-                </h1>
-                <p class="text-slate-300 text-sm mt-1 font-medium">
-                    Turn spam into revenue.
-                </p>
-            </div>
-        </header>
-    `.trim();
-}
